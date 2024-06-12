@@ -1,3 +1,7 @@
+#define GENERAL_SETTINGS_AMOLED_VERSION                                                    1                // set to 1 if you are using the Lilygo T-Display S3 AMOLED v1
+                                                                                                            // set to 2 if you are using the Lilygo T-Display S3 AMOLED v2 
+                                                                                                            // for more information please see: https://www.lilygo.cc/en-ca/products/t-display-s3-amoled
+
 #define GENERAL_SETTINGS_GO_LIVE                                                           true             // set to true to retrieve stats from Google; set to false (for testing) to not retrieve stats from Google
 
 #define GENERAL_SETTINGS_MINUTES_BETWEEN_UPDATES                                           10               // the frequency, in minutes, at which the stats will be retrieved from Google

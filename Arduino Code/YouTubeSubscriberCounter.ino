@@ -1,4 +1,5 @@
-// YouTube Subscriber Counter (version 1)
+// YouTube Subscriber Counter - version 1.1 - updated to support AMOLED V2
+//                            - version 1 - initial release
 //
 // Copyright Rob Latour, 2023
 // htts://raltour.com/youtubesubscribercounter
@@ -11,17 +12,18 @@
 //
 // Arduino Tools settings:
 // USB CDC On Boot:                Enabled
-// CPU Frequency:                  240MHz
-// USB DFU On Boot:                Enabled
+// CPU Frequency:                  240MHz (WiFi)
 // Core Debug Level:               None
+// USB DFU On Boot:                Enabled (Requires USB-OTG Mode)
 // Erase All Flash Before Upload:  Disabled
 // Events Run On:                  Core 1
 // Flash Mode:                     QIO 80Mhz
-// Flash Size:                     16MB (128MB)
+// Flash Size:                     16MB (128Mb)
+// ITAG Adapter:                   Disabled
 // Arduino Runs On:                Core 1
 // USB Firmware MSC On Boot:       Disabled
-// PSRAM:                          OPI PSRAM
 // Partition Scheme:               16 M Flash (3MB APP/9.9MB FATFS)
+// PSRAM:                          OPI PSRAM
 // USB Mode:                       Hardware CDC and JTAG
 // Upload Mode:                    UART0 / Hardware CDC
 // Upload Speed:                   921600
@@ -65,7 +67,7 @@ TFT_eSprite sprite = TFT_eSprite(&tft);
 
 #define topButtonIfUSBIsOnTheRight 21
 #define bottomButtonIfUSBIsOnTheRight 0
-#define led 38
+#define PIN_LED_v1_Display_v2 38  // GPIO 38 is used to turn on/off the Green LED on the AMOLED V1 and to turn on/off the Display on the AMOLED v2  
 
 #define PIN_IN1 46
 #define PIN_IN2 45
@@ -283,11 +285,13 @@ bool checkButtons() {
       returnValue = true;
 
       // light the green led while the button is pressed so that the user knows that the program is paying attention
-      ToogleGreenLed(true);
+      if (GENERAL_SETTINGS_AMOLED_VERSION == 1)
+        Set_Green_LED_v1_or_Display_v2(true);
       // hold here until the bottom button is released
       while (digitalRead(bottomButton) == 0)
         delay(50);
-      ToogleGreenLed(false);
+      if (GENERAL_SETTINGS_AMOLED_VERSION == 1)
+        Set_Green_LED_v1_or_Display_v2(false);
       nextUpdate = 0;
     };
   };
@@ -613,12 +617,14 @@ String formatYouTubeNumber(int x) {
   return returnValue;
 }
 
-void ToogleGreenLed(bool toggleOn) {
+void Set_Green_LED_v1_or_Display_v2(bool toggleOn) {
+
+  // GPIO 38 is used to turn on/off the Green LED on the AMOLED V1 and to turn on/off the Display on the AMOLED v2 
 
   if (toggleOn) {
-    digitalWrite(led, HIGH);
+    digitalWrite(PIN_LED_v1_Display_v2, HIGH);
   } else {
-    digitalWrite(led, LOW);
+    digitalWrite(PIN_LED_v1_Display_v2, LOW);
   }
 }
 
@@ -630,9 +636,14 @@ void setup() {
   pinMode(topButtonIfUSBIsOnTheRight, INPUT_PULLUP);
   pinMode(bottomButtonIfUSBIsOnTheRight, INPUT_PULLUP);
 
-  // turn off the green LED
-  pinMode(led, OUTPUT);
-  ToogleGreenLed(false);
+  pinMode(PIN_LED_v1_Display_v2, OUTPUT);
+  if (GENERAL_SETTINGS_AMOLED_VERSION == 1) {
+    // turn off the green LED
+    Set_Green_LED_v1_or_Display_v2(false);
+  } else {
+    // turn on the LCD display
+    Set_Green_LED_v1_or_Display_v2(true);
+  };
 
   setupEEPROM();
 
@@ -684,10 +695,12 @@ void loop() {
     // this as it is unlikely the user wants their saved display option to be the 'about' screen (displayOption == maxDisplayOptions)
 
     if (displayOption < maxDisplayOptions) {
-      ToogleGreenLed(true);
+      if (GENERAL_SETTINGS_AMOLED_VERSION == 1)
+        Set_Green_LED_v1_or_Display_v2(true);
       SaveSettingsInNonVolatileMemory();
       delay(500);
-      ToogleGreenLed(false);
+      if (GENERAL_SETTINGS_AMOLED_VERSION == 1)
+        Set_Green_LED_v1_or_Display_v2(false);
     };
   };
 
