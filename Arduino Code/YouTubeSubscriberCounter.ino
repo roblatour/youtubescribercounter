@@ -60,7 +60,7 @@ const String confirmEEPROMHasBeenIntialize = "EEPROM initialized";
 const int eepromSettingsStartingAddressForSettings = confirmEEPROMHasBeenIntialize.length() + 1;
 const int eepromMaxSize = eepromSettingsStartingAddressForSettings + numberOfSavedSettingsInEEPROM + 1;
 
-String programNameAndVersion = "YouTube Subscriber Counter v1";
+String programNameAndVersion = "YouTube Subscriber Counter v1.1";
 
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
